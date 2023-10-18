@@ -1,9 +1,42 @@
-import { MouseEvent } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import "./App.scss";
 import FlippingCard from "./components/FlippingCard/FlippingCard";
 
+const currentDate = new Date();
+const firstDateNextYear = new Date(currentDate.getFullYear() + 1, 0, 1);
+const diffMs = firstDateNextYear.getTime() - currentDate.getTime();
+
+const convertMilliseconds = (ms: number) => {
+  // Number of milliseconds per unit of time
+  const perSecond = 1000; 
+  const perMinute = perSecond * 60;
+  const perHour = perMinute * 60;
+  const perDay = perHour * 24;
+
+  // Calculate the amount of each unit of time
+  const days = Math.floor(ms / perDay);
+  ms %= perDay;
+
+  const hours = Math.floor(ms / perHour);
+  ms %= perHour;
+
+  const minutes = Math.floor(ms / perMinute);
+  ms %= perMinute;
+
+  const seconds = Math.floor(ms / perSecond);
+
+  // Return result
+  return {
+    days: days,
+    hours: hours,
+    minutes: minutes,
+    seconds: seconds
+  };
+};
+
 function App() {
-  const date = new Date();
+  const [remaining, setRemaining] = useState(convertMilliseconds(diffMs));
+
   const handleMouseEnter = (e: MouseEvent<SVGSVGElement>) => {
     const svg = e.currentTarget;
     const path = svg.getElementsByTagName("path")[0];
@@ -16,12 +49,24 @@ function App() {
     path.setAttribute("fill", "#8385A9");
   };
 
+  useEffect(() => {
+    setInterval(() => {
+      const currentDate = new Date();
+      const firstDateNextYear = new Date(currentDate.getFullYear() + 1, 0, 1);
+      const diffMs = firstDateNextYear.getTime() - currentDate.getTime();
+      setRemaining(convertMilliseconds(diffMs));
+    }, 1000);
+  }, []);
+
   return (
     <>
       <section className="clock">
-        <h1>We're launching soon</h1>
+        <h1>We will launch at the first date of next year</h1>
         <div className="clock--countdown">
-          <FlippingCard frontNumber={date.getDate()} backNumber={date.getMonth()}></FlippingCard>
+          <FlippingCard frontNumber={remaining.days} backNumber={remaining.days}></FlippingCard>
+          <FlippingCard frontNumber={remaining.hours} backNumber={remaining.hours}></FlippingCard>
+          <FlippingCard frontNumber={remaining.minutes} backNumber={remaining.minutes}></FlippingCard>
+          <FlippingCard frontNumber={remaining.seconds} backNumber={remaining.seconds}></FlippingCard>
         </div>
       </section>
       <section className="social-medias">
