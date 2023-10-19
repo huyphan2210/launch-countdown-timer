@@ -36,6 +36,7 @@ const convertMilliseconds = (ms: number) => {
 
 function App() {
   const [remaining, setRemaining] = useState(convertMilliseconds(diffMs));
+  const [nextRemaining, setNextRemaining] = useState(remaining);
 
   const handleMouseEnter = (e: MouseEvent<SVGSVGElement>) => {
     const svg = e.currentTarget;
@@ -55,6 +56,7 @@ function App() {
       const firstDateNextYear = new Date(currentDate.getFullYear() + 1, 0, 1);
       const diffMs = firstDateNextYear.getTime() - currentDate.getTime();
       setRemaining(convertMilliseconds(diffMs));
+      setNextRemaining(diffMs - 1000 >= 0 ? convertMilliseconds(diffMs - 1000) : convertMilliseconds(0));
     }, 1000);
   }, []);
 
@@ -63,10 +65,10 @@ function App() {
       <section className="clock">
         <h1>We will launch at the first date of next year</h1>
         <div className="clock--countdown">
-          <FlippingCard frontNumber={remaining.days} backNumber={remaining.days}></FlippingCard>
-          <FlippingCard frontNumber={remaining.hours} backNumber={remaining.hours}></FlippingCard>
-          <FlippingCard frontNumber={remaining.minutes} backNumber={remaining.minutes}></FlippingCard>
-          <FlippingCard frontNumber={remaining.seconds} backNumber={remaining.seconds}></FlippingCard>
+          <FlippingCard frontNumber={remaining.days} backNumber={nextRemaining.days}></FlippingCard>
+          <FlippingCard frontNumber={remaining.hours} backNumber={nextRemaining.hours}></FlippingCard>
+          <FlippingCard frontNumber={remaining.minutes} backNumber={nextRemaining.minutes}></FlippingCard>
+          <FlippingCard frontNumber={remaining.seconds} backNumber={nextRemaining.seconds}></FlippingCard>
         </div>
       </section>
       <section className="social-medias">
